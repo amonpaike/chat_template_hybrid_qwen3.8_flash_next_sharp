@@ -21,7 +21,16 @@
 {%- set _has_tools = (tools is defined and tools and tools is iterable and tools is not mapping) %}
 {%- set _effort_raw = (reasoning_effort | string | lower) if reasoning_effort is defined and reasoning_effort is not none else _default_reasoning_effort %}
 {%- set _initial_thinking = enable_thinking %}
-{%- set _initial_effort = _effort_raw %}
+{%- if _effort_raw in ('none', 'off') %}
+    {%- set _initial_thinking = false %}
+    {%- set _initial_effort = 'medium' %}
+{%- elif _effort_raw in ('minimal', 'low') %}
+    {%- set _initial_effort = 'low' %}
+{%- elif _effort_raw in ('high', 'xhigh', 'max', 'ultracode', 'extreme') %}
+    {%- set _initial_effort = 'xhigh' %}
+{%- else %}
+    {%- set _initial_effort = 'medium' %}
+{%- endif %}
 {%- set ns_state = namespace(thinking=_initial_thinking, effort=_initial_effort) %}
 {%- if auto_disable_thinking_with_tools and _has_tools %}
     {%- set ns_state.thinking = false %}
